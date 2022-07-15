@@ -1,0 +1,327 @@
+#:import hex kivy.utils.get_color_from_hex
+
+<Separator@Widget>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    size_hint_y: None
+    height: dp(2)
+
+<EmptySpace@Widget>:
+    canvas:
+        Color:
+            rgba: hex('#03A9F4')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    size_hint_y: None
+    height: dp(5)
+
+<PriceQuantityInput@TextInput>
+    size_hint: (100, None)
+    height: 30
+
+<PriceQuantityLabel@Label>
+    size_hint_y: None
+    height: 15
+
+<CustomAlertPopup@Popup>:
+    auto_dismiss: False
+    title: 'Operation Failed! Not enough money!'  
+    size_hint: 0.6, 0.2
+    pos_hint: {"x": 0.2, "top": 0.9}
+
+    Button:
+        text: 'You cannot make any more operation!'
+        font_size: 24
+        on_release: app.close_window()
+
+<Management_System>:
+    cols: 1
+
+    whole_grain_flour_price_value: whole_grain_flour_price_value
+    whole_grain_flour_qnt_value: whole_grain_flour_qnt_value
+    rice_price_value: rice_price_value
+    rice_qnt_value: rice_qnt_value
+    pinto_beans_price_value: pinto_beans_price_value
+    pinto_beans_qnt_value: pinto_beans_qnt_value
+    red_lentils_price_value: red_lentils_price_value
+    red_lentils_qnt_value: red_lentils_qnt_value
+
+    # Output values
+    whole_grain_flour_quantity_output: whole_grain_flour_quantity_output
+    rice_quantity_output: rice_quantity_output
+    pinto_beans_quantity_output: pinto_beans_quantity_output
+    red_lentils_quantity_output: red_lentils_quantity_output
+
+    # Show temp products
+    show_temp_products_switch: show_temp_products_switch
+
+    # Output Label
+    output_label_id: output_label_id
+
+    # Temp Products input
+    temp_products_input: temp_products_input
+
+    Label:
+        text: '[b]Management System[/b]'
+        font_size: '30sp'
+        markup: True
+        size_hint_y: None
+        height: 40
+
+    Label:
+        text: 'Show products about to order'
+        size_hint_y: None
+        height: 20
+        text_size: self.size
+
+    Switch:
+        id: show_temp_products_switch
+        size_hint: (None, None)
+        height: 20
+        pos: (100, 100)
+        on_touch_down: root.handle_show_temp_products(self)
+
+    EmptySpace:
+
+    Label:
+        text: f'Available Money - {str(root.available_sum)}'
+        font_size: '20sp'
+        markup: True
+        size_hint_y: None
+        height: 30
+
+    GridLayout:
+        cols: 3
+        spacing: 30
+        padding: 30
+
+        GridLayout:
+            cols: 1
+
+            canvas.before:
+                Color: 
+                    rgba: hex('#03A9F4')
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            
+            Label:
+                text: '[b]Add product price and quantity[/b]'
+                font_size: '18sp'
+                markup: True
+                size_hint_y: None
+                height: 33
+
+            PriceQuantityLabel: 
+                text: 'Whole-grain flour price'
+            PriceQuantityInput:
+                id: whole_grain_flour_price_value
+                on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'price')
+
+            PriceQuantityLabel: 
+                text: 'Whole-grain flour quantity'
+            PriceQuantityInput:
+                id: whole_grain_flour_qnt_value
+                on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'qnt')
+
+
+            EmptySpace:
+            Separator:
+            EmptySpace:
+
+            PriceQuantityLabel: 
+                text: 'Rice price'
+            EmptySpace:
+            PriceQuantityInput:
+                id: rice_price_value
+                on_text: root.handle_text_changing(self, self.text, 'rice', 'price')
+
+            PriceQuantityLabel: 
+                text: 'Rice quantity'
+            PriceQuantityInput:
+                id: rice_qnt_value
+                on_text: root.handle_text_changing(self, self.text, 'rice', 'qnt')
+
+            EmptySpace:
+            Separator:
+            EmptySpace:
+
+            PriceQuantityLabel: 
+                text: 'Pinto Bean price'
+            PriceQuantityInput:
+                id: pinto_beans_price_value
+                on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'price')
+
+            PriceQuantityLabel: 
+                text: 'Pinto Bean quantity'
+            PriceQuantityInput:
+                id: pinto_beans_qnt_value
+                on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'qnt')
+
+            EmptySpace:
+            Separator:
+            EmptySpace:
+
+            PriceQuantityLabel: 
+                text: 'Ret lentils price'
+            PriceQuantityInput:
+                id: red_lentils_price_value
+                on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'price')
+
+
+            PriceQuantityLabel: 
+                text: 'Ret lentils quantity'
+            PriceQuantityInput:
+                id: red_lentils_qnt_value
+                on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'qnt')
+
+                
+        GridLayout:
+            add: add
+            subtr: subtr
+            calc: calc
+
+            cols: 1
+
+            Label:
+                text: '[b]Actions to take[/b]'
+                font_size: '18sp'
+                markup: True
+                size_hint_y: None
+                height: 30
+
+            EmptySpace:
+            EmptySpace:
+
+            Button:
+                id: add
+                text: 'Adding to the stock'
+                size_hint_y: None
+                height: 70
+                on_press: root.handle_operation_click('add', root.temp_products)
+            Button:
+                id: subtr
+                text: 'Removing from the stock'
+                size_hint_y: None
+                height: 70
+                on_press: root.handle_operation_click('subtr', root.temp_products)
+            Button:
+                id: calc
+                text: 'Finalizing the order'
+                size_hint_y: None
+                height: 70
+                on_press: root.handle_operation_click('finalize')
+            Button:
+                text: 'Clearing the order'
+                size_hint_y: None
+                height: 70
+                on_press: root.handle_operation_click('clear')
+
+        GridLayout:
+            cols: 1
+
+            Label:
+                text: '[b]Lists of products quantities[/b]'
+                font_size: '18sp'
+                markup: True
+                size_hint_y: None
+                height: 30
+
+            EmptySpace:
+            EmptySpace:
+
+            GridLayout:
+                cols: 2
+
+                Label: 
+                    text: 'Whole-grain flour'
+                    size_hint_y: None
+                    height: 30
+                Switch:
+                    id: whole-grain-flour-switch
+                    size_hint: (None, None)
+                    size: (40, 40)
+
+                TextInput:
+                    id: whole_grain_flour_quantity_output
+                    text: str(root.get_product_qnt_by_key('whole-grain-flour'))
+                    disabled: True
+                    size_hint: (100, None)
+                    height: 30
+
+            GridLayout:
+                cols: 2
+
+                Label: 
+                    text: 'Rice'
+                    size_hint_y: None
+                    height: 30
+                Switch:
+                    id: rice-switch
+                    size_hint: (None, None)
+                    size: (40, 40)
+                    
+                TextInput:
+                    id: rice_quantity_output
+                    text: str(root.get_product_qnt_by_key('rice'))
+                    disabled: True
+                    size_hint: (100, None)
+                    height: 30
+
+            GridLayout:
+                cols: 2
+
+                Label: 
+                    text: 'Pinto beans'
+                    size_hint_y: None
+                    height: 30
+                Switch:
+                    id: rice-switch
+                    size_hint: (None, None)
+                    size: (40, 40)
+                    
+                TextInput:
+                    id: pinto_beans_quantity_output
+                    text: str(root.get_product_qnt_by_key('pinto-beans'))
+                    disabled: True
+                    size_hint: (100, None)
+                    height: 30
+
+            GridLayout:
+                cols: 2
+
+                Label: 
+                    text: 'Red lentils'
+                    size_hint_y: None
+                    height: 30
+                Switch:
+                    id: rice-switch
+                    size_hint: (None, None)
+                    size: (40, 40)
+                    
+                TextInput:
+                    id: red_lentils_quantity_output
+                    text: str(root.get_product_qnt_by_key('red-lentils'))
+                    disabled: True
+                    size_hint: (100, None)
+                    height: 30
+
+    Label:
+        id: output_label_id
+        text: ''
+        size_hint_y: None
+        height: 40
+    
+    TextInput:
+        id: temp_products_input
+        text: 'No products to order yet!'
+        size_hint_y: None
+        height: 30
+        disabled: True
