@@ -125,6 +125,7 @@ class Management_System(Screen):
 
         '''
         for key, val in items.items():
+            # REFACTOR This area
             if len(list(val.items())) == 1:
                 get_prop = list(val.items())[0]
                 original_key = key.replace('-', '_')
@@ -170,6 +171,7 @@ class Management_System(Screen):
                         self.temp_products[key].update({
                             'total': self.products[key].qnt - int(val['qnt'])
                         })
+            # print(key, val)
 
 
     def check_for_certain_word(self, word):
@@ -183,7 +185,8 @@ class Management_System(Screen):
         word = word.replace('-', '_')
         for key, val in self.ids.items():
             if word in key and 'output' not in key:
-                val.text = ''
+                # val.text = ''
+                pass
 
     
     def update_output_field_by_existing_key(self, key):
@@ -231,12 +234,27 @@ class Management_System(Screen):
 
             self.add_widget(popup)
                 
-        #     self.output_label_id.text = 'Not enough money'
-        #     self.change_the_output_label_size_and_color('20sp', '#ff051a')
-        #     return False
+            self.output_label_id.text = 'Not enough money'
+            self.change_the_output_label_size_and_color('20sp', '#ff051a')
+            return False
 
     def close_window(self, inst):
         Window.close()
+
+    def clear_the_price_and_quantity_stock_inputs(self):
+        
+        self.whole_grain_flour_price_value.text = ''
+        self.whole_grain_flour_qnt_value.text = ''
+    
+        self.rice_price_value.text = ''
+        self.rice_qnt_value.text = ''
+    
+        self.pinto_beans_price_value.text = ''
+        self.pinto_beans_qnt_value.text = ''
+    
+        self.red_lentils_price_value.text = ''
+        self.red_lentils_qnt_value.text = ''
+            
 
     # MAIN METHODS
     def handle_operation_click(self, type_of_operation, items = {}):
@@ -252,6 +270,7 @@ class Management_System(Screen):
                 check_for_certain_word
                 check_for_missing_prop_and_update_total
                 update_output_field_by_existing_key
+                clear_the_price_and_quantity_stock_inputs
         '''
 
         self.output_label_id.text = ''
@@ -284,8 +303,9 @@ class Management_System(Screen):
                             self.available_sum -= val_to_subtr
                             self.products[key].qnt = int(val['total'])
                             self.update_output_field_by_existing_key(key)
+                            
+                self.clear_the_price_and_quantity_stock_inputs()
             else:
-                # self.output_label = 'You should add or remove something before finalizing the order!'
                 self.output_label_id.text = 'You should add or remove something before finalizing the order!'
                 self.change_the_output_label_size_and_color('20sp', '#ff051a')
 
@@ -294,6 +314,7 @@ class Management_System(Screen):
                 self.check_for_certain_word(key)
 
             self.temp_products = {}
+            self.update_the_products_output()
 
     # Function when text is being changed
 
@@ -302,7 +323,7 @@ class Management_System(Screen):
             Function to delete certain items
         '''
         for key in list(self.temp_products.keys()):
-            if ('qnt' in self.temp_products[key] and self.temp_products[key]['qnt'] == '') and ('price' in self.temp_products[key] and self.temp_products[key]['price'] == ''):
+            if ('qnt' in self.temp_products[key] and self.temp_products[key]['qnt'] == '') or ('price' in self.temp_products[key] and self.temp_products[key]['price'] == ''):
                 del self.temp_products[key]
                 self.update_the_products_output()
 
@@ -325,7 +346,6 @@ class Management_System(Screen):
                 item - the item for which the text input is referring to
                 prop - 'price' or 'qnt'
         '''
-
         if item not in self.temp_products:
             self.temp_products[item] = {
                 prop: val

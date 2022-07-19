@@ -1,3 +1,3 @@
 ## Todos:
 
-1. Add calculator (NB. Popup widget?)
+check the funcionality after the refactoring! Some bugs spotted!
