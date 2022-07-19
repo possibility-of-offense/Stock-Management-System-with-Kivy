@@ -1,5 +1,9 @@
 #:import hex kivy.utils.get_color_from_hex
 
+WindowManager:
+    Management_System:
+    MovementsManager:
+
 <Separator@Widget>:
     canvas:
         Color:
@@ -30,19 +34,8 @@
     size_hint_y: None
     height: 15
 
-<CustomAlertPopup@Popup>:
-    auto_dismiss: False
-    title: 'Operation Failed! Not enough money!'  
-    size_hint: 0.6, 0.2
-    pos_hint: {"x": 0.2, "top": 0.9}
-
-    Button:
-        text: 'You cannot make any more operation!'
-        font_size: 24
-        on_release: app.close_window()
-
 <Management_System>:
-    cols: 1
+    name: 'first'
 
     whole_grain_flour_price_value: whole_grain_flour_price_value
     whole_grain_flour_qnt_value: whole_grain_flour_qnt_value
@@ -59,321 +52,363 @@
     pinto_beans_quantity_output: pinto_beans_quantity_output
     red_lentils_quantity_output: red_lentils_quantity_output
 
-    # Show temp products
-    show_temp_products_switch: show_temp_products_switch
-
     # Output Label
     output_label_id: output_label_id
 
     # Temp Products input
     temp_products_input: temp_products_input
-
-    Label:
-        text: '[b]Management System[/b]'
-        font_size: '30sp'
-        markup: True
-        size_hint_y: None
-        height: 40
-
-    Label:
-        text: 'Show products about to order'
-        size_hint_y: None
-        height: 20
-        text_size: self.size
-
-    Switch:
-        id: show_temp_products_switch
-        size_hint: (None, None)
-        height: 20
-        pos: (100, 100)
-        on_touch_down: root.handle_show_temp_products(self)
-
-    EmptySpace:
-
-    Label:
-        text: f'Available Money - {str(root.available_sum)}'
-        font_size: '20sp'
-        markup: True
-        size_hint_y: None
-        height: 30
-
     GridLayout:
-        cols: 3
-        spacing: 30
-        padding: 30
+        cols: 1
+
+        Label:
+            text: '[b]Management System[/b]'
+            font_size: '30sp'
+            markup: True
+            size_hint_y: None
+            height: 40
+
+        BoxLayout:
+            height: self.minimum_height
+            size_hint_y: None
+
+            Label:
+                text: 'Show products about to order'
+                size_hint_y: None
+                size_hint_x: None
+                height: 20
+                width: 200
+                text_size: self.size
+
+            CheckBox:
+                size_hint: (None, None)
+                height: 20
+                pos: (100, 100)
+                canvas.before:
+                    Color: 
+                        rgb: 1, 1, 1
+                    Rectangle:
+                        size: 16, 16
+                        pos: self.center_x-8, self.center_y-8
+
+                color:.294, .761, .623
+                on_active: root.handle_show_temp_products(self)
+
+        EmptySpace:
 
         GridLayout:
             cols: 1
-
-            canvas.before:
-                Color: 
-                    rgba: hex('#03A9F4')
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
+            height: self.minimum_height
+            size_hint_y: None
             
             Label:
-                text: '[b]Add product price and quantity[/b]'
-                font_size: '18sp'
+                text: f'Available Money - {str(root.available_sum)}'
+                font_size: '20sp'
                 markup: True
                 size_hint_y: None
-                height: 33
+                height: 30
 
-            PriceQuantityLabel: 
-                text: 'Whole-grain flour price'
-            PriceQuantityInput:
-                id: whole_grain_flour_price_value
-                on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'price')
+            Button:
+                text: 'Check the movements'
+                size_hint_y: None
+                size_hint_x: None
+                height: 30
+                width: 220
+                on_release: 
+                    app.root.current = 'second'
+                    root.manager.transition.direction = 'left'
 
-            PriceQuantityLabel: 
-                text: 'Whole-grain flour quantity'
-            PriceQuantityInput:
-                id: whole_grain_flour_qnt_value
-                on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'qnt')
+        GridLayout:
+            cols: 3
+            spacing: 30
+            padding: 30
 
+            GridLayout:
+                cols: 1
 
-            EmptySpace:
-            Separator:
-            EmptySpace:
-
-            PriceQuantityLabel: 
-                text: 'Rice price'
-            EmptySpace:
-            PriceQuantityInput:
-                id: rice_price_value
-                on_text: root.handle_text_changing(self, self.text, 'rice', 'price')
-
-            PriceQuantityLabel: 
-                text: 'Rice quantity'
-            PriceQuantityInput:
-                id: rice_qnt_value
-                on_text: root.handle_text_changing(self, self.text, 'rice', 'qnt')
-
-            EmptySpace:
-            Separator:
-            EmptySpace:
-
-            PriceQuantityLabel: 
-                text: 'Pinto Bean price'
-            PriceQuantityInput:
-                id: pinto_beans_price_value
-                on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'price')
-
-            PriceQuantityLabel: 
-                text: 'Pinto Bean quantity'
-            PriceQuantityInput:
-                id: pinto_beans_qnt_value
-                on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'qnt')
-
-            EmptySpace:
-            Separator:
-            EmptySpace:
-
-            PriceQuantityLabel: 
-                text: 'Ret lentils price'
-            PriceQuantityInput:
-                id: red_lentils_price_value
-                on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'price')
-
-
-            PriceQuantityLabel: 
-                text: 'Ret lentils quantity'
-            PriceQuantityInput:
-                id: red_lentils_qnt_value
-                on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'qnt')
-
+                canvas.before:
+                    Color: 
+                        rgba: hex('#03A9F4')
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
                 
-        GridLayout:
-            add: add
-            subtr: subtr
-            calc: calc
-
-            cols: 1
-
-            Label:
-                text: '[b]Actions to take[/b]'
-                font_size: '18sp'
-                markup: True
-                size_hint_y: None
-                height: 30
-
-            EmptySpace:
-            EmptySpace:
-
-            Button:
-                id: add
-                text: 'Adding to the stock'
-                size_hint_y: None
-                height: 70
-                on_press: root.handle_operation_click('add', root.temp_products)
-            Button:
-                id: subtr
-                text: 'Removing from the stock'
-                size_hint_y: None
-                height: 70
-                on_press: root.handle_operation_click('subtr', root.temp_products)
-            Button:
-                id: calc
-                text: 'Finalizing the order'
-                size_hint_y: None
-                height: 70
-                on_press: root.handle_operation_click('finalize')
-            Button:
-                text: 'Clearing the order'
-                size_hint_y: None
-                height: 70
-                on_press: root.handle_operation_click('clear')
-
-        GridLayout:
-            cols: 1
-
-            Label:
-                text: '[b]Lists of products quantities[/b]'
-                font_size: '18sp'
-                markup: True
-                size_hint_y: None
-                height: 30
-
-            EmptySpace:
-            EmptySpace:
-
-            GridLayout:
-                cols: 1
-
-                Label: 
-                    text: 'Whole-grain flour'
+                Label:
+                    text: '[b]Add product price and quantity[/b]'
+                    font_size: '18sp'
+                    markup: True
                     size_hint_y: None
-                    height: 30
+                    height: 33
 
-                TextInput:
-                    id: whole_grain_flour_quantity_output
-                    text: str(root.get_product_qnt_by_key('whole-grain-flour'))
-                    disabled: True
-                    size_hint: (100, None)
-                    height: 30
+                PriceQuantityLabel: 
+                    text: 'Whole-grain flour price'
+                PriceQuantityInput:
+                    id: whole_grain_flour_price_value
+                    on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'price')
 
-                GridLayout:
-                    cols: 2
+                PriceQuantityLabel: 
+                    text: 'Whole-grain flour quantity'
+                PriceQuantityInput:
+                    id: whole_grain_flour_qnt_value
+                    on_text: root.handle_text_changing(self, self.text, 'whole-grain-flour', 'qnt')
 
-                    Label:
-                        text: 'Disable from ordering'
 
-                    CheckBox:
-                        canvas.before:
-                            Color: 
-                                rgb: 1, 1, 1
-                            Rectangle:
-                                size: 16, 16
-                                pos: self.center_x-8, self.center_y-8
+                EmptySpace:
+                Separator:
+                EmptySpace:
 
-                        color:.294, .761, .623
-                        on_active: root.handle_disable_whole_grain_flour(self, self.active)
+                PriceQuantityLabel: 
+                    text: 'Rice price'
+                EmptySpace:
+                PriceQuantityInput:
+                    id: rice_price_value
+                    on_text: root.handle_text_changing(self, self.text, 'rice', 'price')
 
-            GridLayout:
-                cols: 1
+                PriceQuantityLabel: 
+                    text: 'Rice quantity'
+                PriceQuantityInput:
+                    id: rice_qnt_value
+                    on_text: root.handle_text_changing(self, self.text, 'rice', 'qnt')
 
-                Label: 
-                    text: 'Rice'
-                    size_hint_y: None
-                    height: 30
-                                    
-                TextInput:
-                    id: rice_quantity_output
-                    text: str(root.get_product_qnt_by_key('rice'))
-                    disabled: True
-                    size_hint: (100, None)
-                    height: 30
+                EmptySpace:
+                Separator:
+                EmptySpace:
 
-                GridLayout:
-                    cols: 2
+                PriceQuantityLabel: 
+                    text: 'Pinto Bean price'
+                PriceQuantityInput:
+                    id: pinto_beans_price_value
+                    on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'price')
 
-                    Label:
-                        text: 'Disable from ordering'
+                PriceQuantityLabel: 
+                    text: 'Pinto Bean quantity'
+                PriceQuantityInput:
+                    id: pinto_beans_qnt_value
+                    on_text: root.handle_text_changing(self, self.text, 'pinto-beans', 'qnt')
 
-                    CheckBox:
-                        canvas.before:
-                            Color: 
-                                rgb: 1, 1, 1
-                            Rectangle:
-                                size: 16, 16
-                                pos: self.center_x-8, self.center_y-8
+                EmptySpace:
+                Separator:
+                EmptySpace:
 
-                        color:.294, .761, .623
-                        on_active: root.handle_disable_rice(self, self.active)
+                PriceQuantityLabel: 
+                    text: 'Ret lentils price'
+                PriceQuantityInput:
+                    id: red_lentils_price_value
+                    on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'price')
 
-            GridLayout:
-                cols: 1
 
-                Label: 
-                    text: 'Pinto beans'
-                    size_hint_y: None
-                    height: 30
+                PriceQuantityLabel: 
+                    text: 'Ret lentils quantity'
+                PriceQuantityInput:
+                    id: red_lentils_qnt_value
+                    on_text: root.handle_text_changing(self, self.text, 'red-lentils', 'qnt')
+
                     
-                TextInput:
-                    id: pinto_beans_quantity_output
-                    text: str(root.get_product_qnt_by_key('pinto-beans'))
-                    disabled: True
-                    size_hint: (100, None)
+            GridLayout:
+                add: add
+                subtr: subtr
+                calc: calc
+
+                cols: 1
+
+                Label:
+                    text: '[b]Actions to take[/b]'
+                    font_size: '18sp'
+                    markup: True
+                    size_hint_y: None
                     height: 30
 
-                GridLayout:
-                    cols: 2
+                EmptySpace:
+                EmptySpace:
 
-                    Label:
-                        text: 'Disable from ordering'
-
-                    CheckBox:
-                        canvas.before:
-                            Color: 
-                                rgb: 1, 1, 1
-                            Rectangle:
-                                size: 16, 16
-                                pos: self.center_x-8, self.center_y-8
-
-                        color:.294, .761, .623
-                        on_active: root.handle_disable_pinto_beans(self, self.active)
+                Button:
+                    id: add
+                    text: 'Adding to the stock'
+                    size_hint_y: None
+                    height: 70
+                    on_press: root.handle_operation_click('add', root.temp_products)
+                Button:
+                    id: subtr
+                    text: 'Removing from the stock'
+                    size_hint_y: None
+                    height: 70
+                    on_press: root.handle_operation_click('subtr', root.temp_products)
+                Button:
+                    id: calc
+                    text: 'Finalizing the order'
+                    size_hint_y: None
+                    height: 70
+                    on_press: root.handle_operation_click('finalize')
+                Button:
+                    text: 'Clearing the order'
+                    size_hint_y: None
+                    height: 70
+                    on_press: root.handle_operation_click('clear')
 
             GridLayout:
                 cols: 1
 
-                Label: 
-                    text: 'Red lentils'
+                Label:
+                    text: '[b]Lists of products quantities[/b]'
+                    font_size: '18sp'
+                    markup: True
                     size_hint_y: None
                     height: 30
-                    
-                TextInput:
-                    id: red_lentils_quantity_output
-                    text: str(root.get_product_qnt_by_key('red-lentils'))
-                    disabled: True
-                    size_hint: (100, None)
-                    height: 30
+
+                EmptySpace:
+                EmptySpace:
 
                 GridLayout:
-                    cols: 2
+                    cols: 1
 
-                    Label:
-                        text: 'Disable from ordering'
+                    Label: 
+                        text: 'Whole-grain flour'
+                        size_hint_y: None
+                        height: 30
 
-                    CheckBox:
-                        canvas.before:
-                            Color: 
-                                rgb: 1, 1, 1
-                            Rectangle:
-                                size: 16, 16
-                                pos: self.center_x-8, self.center_y-8
+                    TextInput:
+                        id: whole_grain_flour_quantity_output
+                        text: str(root.get_product_qnt_by_key('whole-grain-flour'))
+                        disabled: True
+                        size_hint: (100, None)
+                        height: 30
 
-                        color:.294, .761, .623
-                        on_active: root.handle_disable_red_lentils(self, self.active)
+                    GridLayout:
+                        cols: 2
 
-    Label:
-        id: output_label_id
-        text: ''
-        size_hint_y: None
-        height: 40
-    
-    TextInput:
-        id: temp_products_input
-        text: 'No products to order yet!'
-        size_hint_y: None
-        height: 30
-        disabled: True
+                        Label:
+                            text: 'Disable from ordering'
+
+                        CheckBox:
+                            canvas.before:
+                                Color: 
+                                    rgb: 1, 1, 1
+                                Rectangle:
+                                    size: 16, 16
+                                    pos: self.center_x-8, self.center_y-8
+
+                            color:.294, .761, .623
+                            on_active: root.handle_disable_whole_grain_flour(self, self.active)
+
+                GridLayout:
+                    cols: 1
+
+                    Label: 
+                        text: 'Rice'
+                        size_hint_y: None
+                        height: 30
+                                        
+                    TextInput:
+                        id: rice_quantity_output
+                        text: str(root.get_product_qnt_by_key('rice'))
+                        disabled: True
+                        size_hint: (100, None)
+                        height: 30
+
+                    GridLayout:
+                        cols: 2
+
+                        Label:
+                            text: 'Disable from ordering'
+
+                        CheckBox:
+                            canvas.before:
+                                Color: 
+                                    rgb: 1, 1, 1
+                                Rectangle:
+                                    size: 16, 16
+                                    pos: self.center_x-8, self.center_y-8
+
+                            color:.294, .761, .623
+                            on_active: root.handle_disable_rice(self, self.active)
+
+                GridLayout:
+                    cols: 1
+
+                    Label: 
+                        text: 'Pinto beans'
+                        size_hint_y: None
+                        height: 30
+                        
+                    TextInput:
+                        id: pinto_beans_quantity_output
+                        text: str(root.get_product_qnt_by_key('pinto-beans'))
+                        disabled: True
+                        size_hint: (100, None)
+                        height: 30
+
+                    GridLayout:
+                        cols: 2
+
+                        Label:
+                            text: 'Disable from ordering'
+
+                        CheckBox:
+                            canvas.before:
+                                Color: 
+                                    rgb: 1, 1, 1
+                                Rectangle:
+                                    size: 16, 16
+                                    pos: self.center_x-8, self.center_y-8
+
+                            color:.294, .761, .623
+                            on_active: root.handle_disable_pinto_beans(self, self.active)
+
+                GridLayout:
+                    cols: 1
+
+                    Label: 
+                        text: 'Red lentils'
+                        size_hint_y: None
+                        height: 30
+                        
+                    TextInput:
+                        id: red_lentils_quantity_output
+                        text: str(root.get_product_qnt_by_key('red-lentils'))
+                        disabled: True
+                        size_hint: (100, None)
+                        height: 30
+
+                    GridLayout:
+                        cols: 2
+
+                        Label:
+                            text: 'Disable from ordering'
+
+                        CheckBox:
+                            canvas.before:
+                                Color: 
+                                    rgb: 1, 1, 1
+                                Rectangle:
+                                    size: 16, 16
+                                    pos: self.center_x-8, self.center_y-8
+
+                            color:.294, .761, .623
+                            on_active: root.handle_disable_red_lentils(self, self.active)
+
+        Label:
+            id: output_label_id
+            text: ''
+            size_hint_y: None
+            height: 40
+        
+        TextInput:
+            id: temp_products_input
+            text: 'No products to order yet!'
+            size_hint_y: None
+            height: 30
+            disabled: True
+
+<MovementsManager>:
+    name: 'second'
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        Button:
+            text: 'Hello from the second screen!'
+            on_release: 
+                app.root.current = 'first'
+                root.manager.transition.direction = 'right'
+        
+        Label:
+            text: 'Movements list'

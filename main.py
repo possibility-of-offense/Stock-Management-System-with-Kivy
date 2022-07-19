@@ -2,14 +2,24 @@ import kivy
 from kivy.app import App
 from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
-from kivy.properties import StringProperty, ObjectProperty, BooleanProperty, NumericProperty
-from kivy.uix.gridlayout import GridLayout
+from kivy.properties import ObjectProperty, BooleanProperty, NumericProperty
 from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
 from kivy.factory import Factory
 from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen
 
 Window.clearcolor = get_color_from_hex('#03A9F4')
-Window.size = (1000, 650)
+Window.size = (1000, 680)
+
+# REFACTOR
+class CustomPopup(Popup):
+    def __init__(self, **kwargs):
+        super(CustomPopup, self).__init__(**kwargs)
+
+    
+# REFACTOR
 
 # Simple Product class
 class Product:
@@ -17,8 +27,10 @@ class Product:
         self.name = name
         self.qnt = qnt
 
+class WindowManager(ScreenManager):
+    pass
 
-class Management_System(GridLayout, Widget):
+class Management_System(Screen):
     # Define Object Properties for linking with the widgets in the KV file (text input fields)
     whole_grain_flour_price_value = ObjectProperty(None)
     whole_grain_flour_qnt_value = ObjectProperty(None)
@@ -41,6 +53,9 @@ class Management_System(GridLayout, Widget):
     # Switch for showing the products about to be ordered and the text input associated with that switch
     show_temp_products_switch = ObjectProperty(None)
     temp_products_input = ObjectProperty(None)
+
+    show_products_switcher = BooleanProperty(False)
+    popup = ''
     
     def __init__(self, **kwargs):
         '''
@@ -137,9 +152,10 @@ class Management_System(GridLayout, Widget):
                 self.change_the_output_label_size_and_color('20sp', '#ff051a')
             else:
                 if type_of_operation == 'add':
-                    self.temp_products[key].update({
-                        'total': self.products[key].qnt + int(val['qnt'])
-                    })
+                    if val['qnt'] != '':
+                        self.temp_products[key].update({
+                            'total': self.products[key].qnt + int(val['qnt'])
+                        })
                     
                 else:
                     if val['qnt']:
@@ -199,12 +215,28 @@ class Management_System(GridLayout, Widget):
                 sum - temporal sum
         '''
         if sum <= 0: 
-            Factory.CustomAlertPopup().open()
-                
-            self.output_label_id.text = 'Not enough money'
-            self.change_the_output_label_size_and_color('20sp', '#ff051a')
-            return False
+            # Factory.CustomAlertPopup().open()
+            self.popup = popup = CustomPopup(
+                auto_dismiss=False, 
+                title='Operation failed! Not enough money',
+                size_hint = (0.6, 0.2),
+                pos_hint = {"x": 0.2, "top": 0.9}
+            )
+            popup_button = Button(
+                text="You cannot make any more operation!",
+                font_size=24
+            )
+            popup_button.bind(on_press=self.close_window)
+            self.popup.add_widget(popup_button)
 
+            self.add_widget(popup)
+                
+        #     self.output_label_id.text = 'Not enough money'
+        #     self.change_the_output_label_size_and_color('20sp', '#ff051a')
+        #     return False
+
+    def close_window(self, inst):
+        Window.close()
 
     # MAIN METHODS
     def handle_operation_click(self, type_of_operation, items = {}):
@@ -265,6 +297,24 @@ class Management_System(GridLayout, Widget):
 
     # Function when text is being changed
 
+    def delete_certain_item(self):
+        '''
+            Function to delete certain items
+        '''
+        for key in list(self.temp_products.keys()):
+            if ('qnt' in self.temp_products[key] and self.temp_products[key]['qnt'] == '') and ('price' in self.temp_products[key] and self.temp_products[key]['price'] == ''):
+                del self.temp_products[key]
+                self.update_the_products_output()
+
+    def update_the_products_output(self):
+        temp_out = list()
+        for key, val in self.temp_products.items():
+            if 'qnt' in val and 'price' in val:
+                qnt = val['qnt']
+                temp_out.append(f'{key} -> quantity: {qnt}')
+            
+            self.temp_products_input.text = ' || '.join(temp_out)
+
     def handle_text_changing(self, inst, val, item, prop):
         '''
             Function to trigger when the text input text is being updated
@@ -283,40 +333,44 @@ class Management_System(GridLayout, Widget):
         else:
             self.temp_products[item].update({prop: val})
 
-            temp_out = list()
-            for key, val in self.temp_products.items():
-                    if 'qnt' in val and 'price' in val:
-                        qnt = val['qnt']
-                        temp_out.append(f'{key} -> quantity: {qnt}')
-                    
-                    self.temp_products_input.text = ' || '.join(temp_out)
+        if self.show_products_switcher is True:
+            self.update_the_products_output()
 
+        self.delete_certain_item()
+        if len(self.temp_products.items()) == 0:
+            self.temp_products_input.text = 'No products to order yet!'
 
     def handle_show_temp_products(self, inst):
-        # I know it does not make sense :D
+        temp_out = list()
         if inst.active is False:
-            temp_out = list()
-
+            self.show_products_switcher = False
             if len(self.temp_products.items()):
-                for key, val in self.temp_products.items():
-                    if 'qnt' in val and 'price' in val:
-                        qnt = val['qnt']
-                        temp_out.append(f'{key} -> quantity: {qnt}')
-                    
-                    self.temp_products_input.text = ' || '.join(temp_out)
+                self.temp_products_input.text = ''
             else:
                 self.temp_products_input.text = 'No products to order yet!'
         else:
-            if len(self.temp_products.items()):
-                if self.show_temp_products_switch.active is True:
-                    self.temp_products_input.text = ''
-            else:
-                self.temp_products_input.text = 'No products to order yet!'
+            self.show_products_switcher = True
+            for key, val in self.temp_products.items():
+                if 'qnt' in val and 'price' in val:
+                    qnt = val['qnt']
+                    temp_out.append(f'{key} -> quantity: {qnt}')
+                
+                if val['qnt'] == '':
+                    for val in temp_out:
+                        if key in val:
+                            temp_out.remove(val)
+                            break
+                
+                self.temp_products_input.text = ' || '.join(temp_out)
 
     def handle_disable_whole_grain_flour(self, inst, is_active):
         if is_active is True:
             self.whole_grain_flour_price_value.disabled = True
             self.whole_grain_flour_qnt_value.disabled = True
+            if 'whole-grain-flour' in self.temp_products:
+                del self.temp_products['whole-grain-flour']
+                self.whole_grain_flour_price_value.text = ''
+                self.whole_grain_flour_qnt_value.text = ''
         else:
             self.whole_grain_flour_price_value.disabled = False
             self.whole_grain_flour_qnt_value.disabled = False
@@ -325,6 +379,10 @@ class Management_System(GridLayout, Widget):
         if is_active is True:
             self.rice_price_value.disabled = True
             self.rice_qnt_value.disabled = True
+            if 'rice' in self.temp_products:
+                del self.temp_products['rice']
+                self.rice_price_value.text = ''
+                self.rice_qnt_value.text = ''
         else:
             self.rice_price_value.disabled = False
             self.rice_qnt_value.disabled = False
@@ -333,6 +391,10 @@ class Management_System(GridLayout, Widget):
         if is_active is True:
             self.pinto_beans_price_value.disabled = True
             self.pinto_beans_qnt_value.disabled = True
+            if 'pinto-beans' in self.temp_products:
+                del self.temp_products['pinto-beans']
+                self.pinto_beans_price_value.text = ''
+                self.pinto_beans_qnt_value.text = ''
         else:
             self.pinto_beans_price_value.disabled = False
             self.pinto_beans_qnt_value.disabled = False
@@ -341,19 +403,25 @@ class Management_System(GridLayout, Widget):
         if is_active is True:
             self.red_lentils_price_value.disabled = True
             self.red_lentils_qnt_value.disabled = True
+            if 'red-lentils' in self.temp_products:
+                del self.temp_products['red-lentils']
+                self.red_lentils_price_value.text = ''
+                self.red_lentils_qnt_value.text = ''
         else:
             self.red_lentils_price_value.disabled = False
             self.red_lentils_qnt_value.disabled = False
 
+class MovementsManager(Screen):
+    pass
+
+
+kv_file = Builder.load_file('./main.kv')
 
 class MainApp(App):
-    def close_window(self):
-        Window.close()
-
+    manage = Management_System()
 
     def build(self):
-        manage = Management_System()
-        return manage
+        return kv_file
 
 if __name__ == '__main__':
     MainApp().run()
