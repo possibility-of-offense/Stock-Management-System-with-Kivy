@@ -1,6 +1,10 @@
 Stock management app
 
-## Todos:
+# Install Python
 
-1. Disable the input fields for adding a quantity and price, if the appropriate switch button is pressed
-2. Add calculator (NB. Popup widget?)
+https://www.python.org/downloads/
+
+# Install Kivy and use the GUI
+
+- Guidelines for different operating systems: https://kivy.org/doc/stable/gettingstarted/installation.html
+- In the Terminal type the following command: \*\* py main.py \*\*

@@ -20,14 +20,14 @@ class Product:
 
 class Management_System(GridLayout, Widget):
     # Define Object Properties for linking with the widgets in the KV file (text input fields)
-    whole_grain_flour_price_value = ObjectProperty('')
-    whole_grain_flour_qnt_value = ObjectProperty('')
-    rice_price_value = ObjectProperty('')
-    rice_qnt_value = ObjectProperty('')
-    pinto_beans_price_value = ObjectProperty('')
-    pinto_beans_qnt_value = ObjectProperty('')
-    red_lentils_price_value = ObjectProperty('')
-    red_lentils_qnt_value = ObjectProperty('')
+    whole_grain_flour_price_value = ObjectProperty(None)
+    whole_grain_flour_qnt_value = ObjectProperty(None)
+    rice_price_value = ObjectProperty(None)
+    rice_qnt_value = ObjectProperty(None)
+    pinto_beans_price_value = ObjectProperty(None)
+    pinto_beans_qnt_value = ObjectProperty(None)
+    red_lentils_price_value = ObjectProperty(None)
+    red_lentils_qnt_value = ObjectProperty(None)
 
     # Define Object Properties for linking with the widgets in the KV file (label outputs for product quantities)
     whole_grain_flour_quantity_output = ObjectProperty(None)
@@ -35,8 +35,10 @@ class Management_System(GridLayout, Widget):
     pinto_beans_quantity_output = ObjectProperty(None)
     red_lentils_quantity_output = ObjectProperty(None)
 
+    # Output label
     output_label_id = ObjectProperty(None)
 
+    # Switch for showing the products about to be ordered and the text input associated with that switch
     show_temp_products_switch = ObjectProperty(None)
     temp_products_input = ObjectProperty(None)
     
@@ -138,6 +140,7 @@ class Management_System(GridLayout, Widget):
                     self.temp_products[key].update({
                         'total': self.products[key].qnt + int(val['qnt'])
                     })
+                    
                 else:
                     if val['qnt']:
                         temp_val = self.products[key].qnt - int(val['qnt'])
@@ -231,7 +234,7 @@ class Management_System(GridLayout, Widget):
             self.check_for_missing_prop_and_update_total(items, type_of_operation)   
             self.being_added_or_removed_from_stock = True
         elif type_of_operation == 'clear':
-            self.whole_grain_flour_price_value = ''
+            # self.whole_grain_flour_price_value = ''
 
             for key, val in self.temp_products.items():
                 self.check_for_certain_word(key)
@@ -272,12 +275,21 @@ class Management_System(GridLayout, Widget):
                 item - the item for which the text input is referring to
                 prop - 'price' or 'qnt'
         '''
+
         if item not in self.temp_products:
             self.temp_products[item] = {
                 prop: val
             }
         else:
             self.temp_products[item].update({prop: val})
+
+            temp_out = list()
+            for key, val in self.temp_products.items():
+                    if 'qnt' in val and 'price' in val:
+                        qnt = val['qnt']
+                        temp_out.append(f'{key} -> quantity: {qnt}')
+                    
+                    self.temp_products_input.text = ' || '.join(temp_out)
 
 
     def handle_show_temp_products(self, inst):
@@ -296,9 +308,42 @@ class Management_System(GridLayout, Widget):
                 self.temp_products_input.text = 'No products to order yet!'
         else:
             if len(self.temp_products.items()):
-                self.temp_products_input.text = ''
+                if self.show_temp_products_switch.active is True:
+                    self.temp_products_input.text = ''
             else:
                 self.temp_products_input.text = 'No products to order yet!'
+
+    def handle_disable_whole_grain_flour(self, inst, is_active):
+        if is_active is True:
+            self.whole_grain_flour_price_value.disabled = True
+            self.whole_grain_flour_qnt_value.disabled = True
+        else:
+            self.whole_grain_flour_price_value.disabled = False
+            self.whole_grain_flour_qnt_value.disabled = False
+    
+    def handle_disable_rice(self, inst, is_active):
+        if is_active is True:
+            self.rice_price_value.disabled = True
+            self.rice_qnt_value.disabled = True
+        else:
+            self.rice_price_value.disabled = False
+            self.rice_qnt_value.disabled = False
+
+    def handle_disable_pinto_beans(self, inst, is_active):
+        if is_active is True:
+            self.pinto_beans_price_value.disabled = True
+            self.pinto_beans_qnt_value.disabled = True
+        else:
+            self.pinto_beans_price_value.disabled = False
+            self.pinto_beans_qnt_value.disabled = False
+
+    def handle_disable_red_lentils(self, inst, is_active):
+        if is_active is True:
+            self.red_lentils_price_value.disabled = True
+            self.red_lentils_qnt_value.disabled = True
+        else:
+            self.red_lentils_price_value.disabled = False
+            self.red_lentils_qnt_value.disabled = False
 
 
 class MainApp(App):

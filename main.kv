@@ -238,16 +238,12 @@
             EmptySpace:
 
             GridLayout:
-                cols: 2
+                cols: 1
 
                 Label: 
                     text: 'Whole-grain flour'
                     size_hint_y: None
                     height: 30
-                Switch:
-                    id: whole-grain-flour-switch
-                    size_hint: (None, None)
-                    size: (40, 40)
 
                 TextInput:
                     id: whole_grain_flour_quantity_output
@@ -256,18 +252,31 @@
                     size_hint: (100, None)
                     height: 30
 
+                GridLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Disable from ordering'
+
+                    CheckBox:
+                        canvas.before:
+                            Color: 
+                                rgb: 1, 1, 1
+                            Rectangle:
+                                size: 16, 16
+                                pos: self.center_x-8, self.center_y-8
+
+                        color:.294, .761, .623
+                        on_active: root.handle_disable_whole_grain_flour(self, self.active)
+
             GridLayout:
-                cols: 2
+                cols: 1
 
                 Label: 
                     text: 'Rice'
                     size_hint_y: None
                     height: 30
-                Switch:
-                    id: rice-switch
-                    size_hint: (None, None)
-                    size: (40, 40)
-                    
+                                    
                 TextInput:
                     id: rice_quantity_output
                     text: str(root.get_product_qnt_by_key('rice'))
@@ -275,17 +284,30 @@
                     size_hint: (100, None)
                     height: 30
 
+                GridLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Disable from ordering'
+
+                    CheckBox:
+                        canvas.before:
+                            Color: 
+                                rgb: 1, 1, 1
+                            Rectangle:
+                                size: 16, 16
+                                pos: self.center_x-8, self.center_y-8
+
+                        color:.294, .761, .623
+                        on_active: root.handle_disable_rice(self, self.active)
+
             GridLayout:
-                cols: 2
+                cols: 1
 
                 Label: 
                     text: 'Pinto beans'
                     size_hint_y: None
                     height: 30
-                Switch:
-                    id: rice-switch
-                    size_hint: (None, None)
-                    size: (40, 40)
                     
                 TextInput:
                     id: pinto_beans_quantity_output
@@ -294,17 +316,30 @@
                     size_hint: (100, None)
                     height: 30
 
+                GridLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Disable from ordering'
+
+                    CheckBox:
+                        canvas.before:
+                            Color: 
+                                rgb: 1, 1, 1
+                            Rectangle:
+                                size: 16, 16
+                                pos: self.center_x-8, self.center_y-8
+
+                        color:.294, .761, .623
+                        on_active: root.handle_disable_pinto_beans(self, self.active)
+
             GridLayout:
-                cols: 2
+                cols: 1
 
                 Label: 
                     text: 'Red lentils'
                     size_hint_y: None
                     height: 30
-                Switch:
-                    id: rice-switch
-                    size_hint: (None, None)
-                    size: (40, 40)
                     
                 TextInput:
                     id: red_lentils_quantity_output
@@ -312,6 +347,23 @@
                     disabled: True
                     size_hint: (100, None)
                     height: 30
+
+                GridLayout:
+                    cols: 2
+
+                    Label:
+                        text: 'Disable from ordering'
+
+                    CheckBox:
+                        canvas.before:
+                            Color: 
+                                rgb: 1, 1, 1
+                            Rectangle:
+                                size: 16, 16
+                                pos: self.center_x-8, self.center_y-8
+
+                        color:.294, .761, .623
+                        on_active: root.handle_disable_red_lentils(self, self.active)
 
     Label:
         id: output_label_id
